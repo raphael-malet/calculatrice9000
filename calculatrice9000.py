@@ -100,7 +100,7 @@ def afficher_historique():
     historique_affichage.grid(columnspan=1)
 
     actualiser = Label(historique, text='Actualiser', background="#FF8809", fg='#FFF', width=20, font=('', 20))
-    actualiser.bind('<Button-1>', lambda e, bouton='Actualiser': afficher_historique())
+    actualiser.bind('<Button-1>', lambda e, bouton='Actualiser': rafraichir_historique(historique))
     actualiser.grid(columnspan=1)
 
     effacer = Label(historique, text='Effacer historique', background="#868686", fg='#FFF', width=20, font=('', 20))
@@ -119,6 +119,10 @@ def effacer_historique():
     historique_effacement.write('')
     historique_effacement.close()
 
+#Fonction pour actualiser l'historique
+def rafraichir_historique(self):
+    self.destroy()
+    afficher_historique()
 
 
 if __name__ == '__main__':
