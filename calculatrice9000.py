@@ -158,7 +158,7 @@ def appuyer_bouton(touche):
 
     # pour reprendre ou non le calcul en cours
     if expression == total:
-        if touche in range(0, 9) or touche == '(' or touche == ')':
+        if touche in range(0, 10) or touche == '(' or touche == ')':
             expression = ""
 
     # si le premier chiffre entrée = 0 l'expression repprend depuis le debut
