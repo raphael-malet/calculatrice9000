@@ -37,47 +37,73 @@ def effacer_historique():
     historique_effacement.write('')  # permet d'effacer le contenu de l'historique
     historique_effacement.close()
 
+#Je suis une calculatrice 9000, et je suis prêt à tout calculer pour toi !!!!
+#doit se lancer sur macos pour avoir une interface graphique adapté
 
-# Fonction pour actualiser l'historique
-def actualiser_historique(fenetre):
-    fenetre.destroy()  # on ferme la fenêtre historique
-    afficher_historique()  # on oouvre la fenêtre hsitorique
+# importe interface graphique
+import tkinter as tk
+from tkinter import ttk
+from tkinter import *
+
+# set-up des expressions de debut
+expression = ""
+total = ""
 
 
-# fonction afficher l'historique
-def afficher_historique():
-    # nom de la fenêtre historique
-    historique = Tk()
+# HISTORIQUE
+def stockage_historique():
+    global expression
+    global total
+    fichier_historique = open('historique.txt', 'a')
+    fichier_historique.write(
+        expression + '=' + total + '\n')  # on écrit l'expression et le résultat dans le fichier .txt
+    fichier_historique.close()
+    lecture_historique()
 
-    # titre de la fenêtre
-    historique.title("Historique Calculatrice9000")
-    # fond de la fenêtre
-    historique.configure(background='#000000')
-    # variable fonction lecture historique
-    variable_historique = lecture_historique()
 
-    # affichage de l'historique
-    historique_affichage = Label(historique, text=variable_historique, background='#000000', font=('', 20))
-    historique_affichage.grid(columnspan=4, row=10)
+# fonction lecture du fichier historique.txt
+def lecture_historique():
+    global historique
+    donnee_historique = open('historique.txt', 'r')
+    # permet d'assigner la lecture de l'historique a une variable.
+    donnee_historique = donnee_historique.readlines()
 
-    # bouton actualiser
-    actualiser = Label(historique, text='Actualiser', background="#FF8809", fg='#FFF', height=2, font=('', 20))
-    actualiser.bind('<Button-1>', lambda e, bouton='Actualiser': actualiser_historique(historique))
-    actualiser.grid(column=1, row=11)
+    if donnee_historique[-1] == NONE:
+        pass
+    else:
+        donnee_historique = donnee_historique[-1]
+        afficher_historique(historique, donnee_historique)
 
-    # bouton effacer historique
-    effacer = Label(historique, text='Effacer historique', background="#868686", fg='#FFF', height=2, font=('', 20))
-    effacer.bind('<Button-1>',
-                 lambda e, bouton='Effacer historique': [effacer_historique(), actualiser_historique(historique)])
-    effacer.grid(column=2, row=11)
 
-    # bouton fermer fenêtre hsitorique
-    quitter = Label(historique, text='QUITTER', background="#DD0000", fg='#FFF', height=2, font=('', 20))
-    quitter.bind('<Button-1>', lambda e, bouton='QUITTER': historique.destroy(), )
-    quitter.grid(column=3, row=11)
+# afficher l'expression et son résultat dans l'historique
+def afficher_historique(historique, expression):
+    global total
+    historique.insert(0, expression)
 
-    historique.mainloop()
 
+# focntion pour effacer l'historique
+def effacer_historique_fichier():
+    global historique
+
+    historique_effacement = open('historique.txt', 'w')
+    historique_effacement.write('')  # permet d'effacer le contenu de l'historique
+    historique_effacement.close()
+    lecture_historique()
+
+
+# supprimer le contenu de l'historique
+def supprimer_historique(historique):
+    historique.delete(0, END)
+    effacer_historique_fichier()
+
+
+# fonction pour afficher l'historique dans la fenetre historique au lancement de l'application
+def affichage_historique_ouverture_appli(historique):
+    historique_ouverture = open('historique.txt', 'r')
+    historique_ouverture = historique_ouverture.readlines()
+
+    for i in range(len(historique_ouverture)):
+        historique.insert(0, historique_ouverture[i])
 
 # CALCULATRICE9000
 # focntion appuyer sur une touche.
@@ -105,19 +131,12 @@ def appuyer_bouton(touche):
     if touche == '²':
         touche = '**2'
         expression += str(touche)
-        if len(expression) >= 5:
-            expression = list(expression)
-            if expression[-5] == '-':
-                expression[-5] = '+'
-                expression = "".join(expression)
-            else:
-                expression = "".join(expression)
         equation.set(expression)
         calculer()
         return
 
     # pour faire racine carré
-    if touche == '√':
+    if touche == '\u221ax':
         touche = '**0.5'
         expression += touche
         equation.set(expression)
@@ -126,6 +145,7 @@ def appuyer_bouton(touche):
 
     if touche == 'π':
         touche = '3.14159265359'
+
     # si on veut afficher le résultat
     if touche == "=":
         calculer()
@@ -154,7 +174,7 @@ def appuyer_bouton(touche):
 # fonction calculer.
 def calculer():
     global total
-    global total_affichage
+    global historique
 
     # si le resultat est possible
     try:
@@ -166,10 +186,10 @@ def calculer():
 
     # si le resultat est impossible
     except:
-        equation.set('erreur')
-        total = 'erreur'
+        equation.set("erreur")
+        total = "erreur"
         stockage_historique()
-        total = ''
+        total = ""
         expression = ""
 
 
@@ -185,11 +205,11 @@ if __name__ == '__main__':
     # la fenêtre prend comme nom fenetre
     fenetre = tk.Tk()
 
-    # couleur de fond
+    # couleur de fond de la fenêtre
     fenetre.configure(background='#101419')
 
     # taille de la fenêtre
-    fenetre.geometry("415x523")
+    fenetre.geometry("420x628")
 
     # Titre de l'application
     fenetre.title("Calculatrice9000")
@@ -198,8 +218,8 @@ if __name__ == '__main__':
     equation = StringVar()
 
     # liste des boutons
-    boutons = ['AC', '(', ')', 'e', 'π', 'exp', '√', '²', 7, 8, 9, '+', 4, 5, 6, "-", 1, 2, 3, '%', 0, ".", "/", "X"]
-    ligne = 2
+    boutons = ['AC', '(', ')', 'e', 'π', 'exp', '\u221ax', '²', 7, 8, 9, '+', 4, 5, 6, "-", 1, 2, 3, '%', 0, ".", "/", "X"]
+    ligne = 3
     collone = 0
 
     # boite d'expression/résultat
@@ -207,26 +227,42 @@ if __name__ == '__main__':
                      anchor=E)
     resultat.grid(columnspan=4)
 
-    # affichage des boutons sur l'interface graphique
+    # fenetre historique
+    historique = tk.Listbox(fenetre, height=5, font=('', 15))
+    historique.grid(row=2, columnspan=4, sticky=EW)
+
+    # Scrollbarr relier a l'historique
+    scrollbar = ttk.Scrollbar(fenetre, orient='vertical', command=historique.yview)
+    scrollbar.grid(row=2, column=3, sticky='nse')
+
+    # communication entre la scrollbarr et le fenetre de l'historique
+    historique['yscrollcommand'] = scrollbar.set
+
+    # afficher l'historique lors de l'ouverture de l'appplication
+    affichage_historique_ouverture_appli(historique)
+
+    # affichage des boutons sur la fenêtre
     for i in boutons:
 
+        # pour le boutton surrpimer l'expression en cours
         if i == 'AC':
             b = Label(fenetre, text=str(i), bg="red", height=3, width=9, font=('', 15, "bold"))
-            # rende les boutons cliquable
+            # rende lee boutons cliquable
             b.bind("<Button-1>", lambda e, bouton=i: appuyer_bouton(bouton))
-
-            # retour a la ligne lorsqu'une ligne de bouton dépasse 4
+            # disposition du boutton sur la grille
             b.grid(row=ligne, column=collone)
             collone += 1
 
+        # les autres boutons
         else:
             b = Label(fenetre, text=str(i), bg="#C8C8C8", fg='#000000', height=3, width=9, font=('', 15, "bold"))
             # rende les boutons cliquable
             b.bind("<Button-1>", lambda e, bouton=i: appuyer_bouton(bouton))
-            # retour a la ligne lorsqu'une ligne de bouton dépasse 4
+            # disposition des bouttons sur la grille
             b.grid(row=ligne, column=collone)
             collone += 1
 
+        # retour a la ligne lorsqu'une ligne de bouton dépasse 4
         if collone == 4:
             collone = 0
             ligne += 1
@@ -234,12 +270,13 @@ if __name__ == '__main__':
     # bouton resultat le contenu
     b = Label(fenetre, text='=', bg="#FF8809", fg='#FFF', height=2, width=12, font=('', 27))
     b.bind("<Button-1>", lambda e, bouton='=': appuyer_bouton(bouton))
-    b.grid(column=2, columnspan=2, row=8)
+    b.grid(column=2, columnspan=2, row=9)
 
     # bouton affichage historique
-    historique = Label(fenetre, text='HISTORIQUE', bg="#868686", fg='#FFF', height=2, width=12, font=('', 27))
-    historique.bind("<Button-1>", lambda e, bouton='historique': afficher_historique())
-    historique.grid(column=0, columnspan=2, row=8)
+    boutton_historique = Label(fenetre, text='AC Historique', bg="#868686", fg='#FFF', height=2, width=12,
+                               font=('', 27))
+    boutton_historique.bind("<Button-1>", lambda e, bouton='historique': [supprimer_historique(historique)])
+    boutton_historique.grid(column=0, columnspan=2, row=9)
 
     # afficher la fenetre
     fenetre.mainloop()
